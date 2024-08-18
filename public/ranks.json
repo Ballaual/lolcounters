@@ -1,0 +1,92 @@
+[
+    {
+        "displayName": "Unranked",
+        "apiName": "unranked",
+        "apiName2": "unranked"
+    },
+    {
+        "displayName": "All",
+        "apiName": "all",
+        "apiName2": "all"
+    },
+    {
+        "displayName": "Iron",
+        "apiName": "iron",
+        "apiName2": "iron"
+    },
+    {
+        "displayName": "Bronze",
+        "apiName": "bronze",
+        "apiName2": "bronze"
+    },
+    {
+        "displayName": "Silver",
+        "apiName": "silver",
+        "apiName2": "silver"
+    },
+    {
+        "displayName": "Gold",
+        "apiName": "gold",
+        "apiName2": "gold"
+    },
+    {
+        "displayName": "Gold+",
+        "apiName": "gold_plus",
+        "apiName2": "gold"
+    },
+    {
+        "displayName": "Platinum",
+        "apiName": "platinum",
+        "apiName2": "platinum"
+    },
+    {
+        "displayName": "Platinum+",
+        "apiName": "platinum_plus",
+        "apiName2": "platinum"
+    },
+    {
+        "displayName": "Emerald",
+        "apiName": "emerald",
+        "apiName2": "emerald"
+    },
+    {
+        "displayName": "Emerald+",
+        "apiName": "emerald_plus",
+        "apiName2": "emerald"
+    },
+    {
+        "displayName": "Diamond",
+        "apiName": "diamond",
+        "apiName2": "diamond"
+    },
+    {
+        "displayName": "Diamond+",
+        "apiName": "diamond_plus",
+        "apiName2": "diamond"
+    },
+    {
+        "displayName": "Master",
+        "apiName": "master",
+        "apiName2": "master"
+    },
+    {
+        "displayName": "Master+",
+        "apiName": "master_plus",
+        "apiName2": "master"
+    },
+    {
+        "displayName": "Grandmaster",
+        "apiName": "grandmaster",
+        "apiName2": "grandmaster"
+    },
+    {
+        "displayName": "Grandmaster+",
+        "apiName": "grandmaster_plus",
+        "apiName2": "grandmaster"
+    },
+    {
+        "displayName": "Challenger",
+        "apiName": "challenger",
+        "apiName2": "challenger"
+    }
+]

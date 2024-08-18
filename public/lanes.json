@@ -1,0 +1,22 @@
+[
+    {
+        "displayName": "Top",
+        "apiName": "top"
+    },
+    {
+        "displayName": "Jungle",
+        "apiName": "jungle"
+    },
+    {
+        "displayName": "Mid",
+        "apiName": "middle"
+    },
+    {
+        "displayName": "Bottom",
+        "apiName": "bottom"
+    },
+    {
+        "displayName": "Support",
+        "apiName": "support"
+    }
+]
