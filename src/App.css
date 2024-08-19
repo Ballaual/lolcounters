@@ -27,7 +27,6 @@ body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
-  /* Zentriert das Logo und den Text vertikal */
   justify-content: space-between;
   padding: 10px 20px;
 }
@@ -36,7 +35,6 @@ body {
   width: 40px;
   height: 40px;
   background-image: url('/public/logo.png');
-  /* Pfad zu deinem Logo */
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -177,7 +175,6 @@ h2 {
 
 body.dark .footer {
   background-color: #1e1e1e;
-  /* Dark mode footer background color */
 }
 
 .required {
@@ -213,12 +210,10 @@ body.dark .form-container {
 
 body.dark h2 {
   color: #ffffff;
-  /* Analyzing text in white */
 }
 
 body.dark label {
   color: #ffffff;
-  /* Enemy champion, rank, patch labels in white */
 }
 
 body.dark .data-table {
@@ -228,13 +223,11 @@ body.dark .data-table {
 body.dark .data-table th {
   background-color: #333;
   color: #ffffff;
-  /* Table headers in white */
 }
 
 body.dark .data-table td {
   background-color: #2e2e2e;
   color: #ffffff;
-  /* Table text in white */
 }
 
 body.dark .footer {
@@ -247,10 +240,8 @@ body.dark .no-data-error {
 
 body.dark .status-container {
   color: #ffffff;
-  /* Weißer Text für Backend im Dark Mode */
 }
 
-/* React-Select Custom Styles */
 .react-select__control {
   background-color: #fff !important;
   color: #000 !important;
@@ -314,7 +305,6 @@ body.dark .react-select__indicator {
   color: #fff !important;
 }
 
-/* Slider Styles */
 .theme-switcher {
   display: flex;
   align-items: center;
@@ -369,6 +359,47 @@ input:checked+.slider:before {
   transform: translateX(14px);
 }
 
+/* Search Button with fixed size */
+.search-btn {
+  width: 150px;
+  /* Set a fixed width */
+  height: 40px;
+  /* Set a fixed height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* Spinner animation */
+.loading-animation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #007bff;
+  border-radius: 50%;
+  width: 20px;
+  /* Smaller width to fit button */
+  height: 20px;
+  /* Smaller height to fit button */
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* Mobile optimization */
 @media screen and (max-width: 768px) {
   .form-row {
@@ -419,11 +450,22 @@ input:checked+.slider:before {
   border-radius: 5px;
   cursor: pointer;
   z-index: 1000;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.cookie-button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
 }
 
 body.dark .cookie-button {
   background-color: #1e1e1e;
-  /* Match the dark mode footer background */
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+body.dark .cookie-button:hover {
+  background-color: #333;
+  transform: scale(1.05);
 }
 
 .cookie-popup {
@@ -457,22 +499,18 @@ body.dark .cookie-button {
   font-size: 24px;
   cursor: pointer;
   color: #333;
-  /* Schwarz im normalen Modus */
 }
 
 .close-popup:hover {
   color: #ff0000;
-  /* Rote Farbe beim Hover für das Schließen-„X“ */
 }
 
 body.dark .close-popup {
   color: #000;
-  /* Schwarz im Dark Mode */
 }
 
 body.dark .close-popup:hover {
   color: #ff0000;
-  /* Rote Farbe beim Hover auch im Dark Mode */
 }
 
 .cookie-popup-content h2,
@@ -497,37 +535,4 @@ body.dark .close-popup:hover {
   background-color: red;
   color: white;
   border: none;
-}
-
-.cookie-button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  z-index: 1000;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.cookie-button:hover {
-  background-color: #0056b3;
-  /* Dunklere Hintergrundfarbe beim Hover */
-  transform: scale(1.05);
-  /* Leichtes Vergrößern beim Hover */
-}
-
-body.dark .cookie-button {
-  background-color: #1e1e1e;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-body.dark .cookie-button:hover {
-  background-color: #333;
-  /* Dunklere Hintergrundfarbe im Dark Mode beim Hover */
-  transform: scale(1.05);
-  /* Leichtes Vergrößern beim Hover */
 }

@@ -449,8 +449,12 @@ function App() {
             </div>
           </div>
           <div className="form-row third-row">
-            <button onClick={fetchData} disabled={!isFormComplete || loading} className="btn">
-              {loading ? 'Loading...' : 'Search'}
+            <button onClick={fetchData} disabled={!isFormComplete || loading} className="btn search-btn">
+              {loading ? (
+                <div className="loading-animation">
+                  <div className="spinner"></div>
+                </div>
+              ) : 'Search'}
             </button>
             <div className="status-container">
               Backend:<div className={`server-status ${serverStatus.toLowerCase()}`}>
@@ -498,12 +502,17 @@ function App() {
       </div>
 
       <footer className="footer">
-        Idea by Justdom | Made by Ballaual | v. 1.1.4
+        Idea by Justdom | Made by Ballaual | v. 1.1.5
       </footer>
 
-      <button className="cookie-button" onClick={() => setShowCookiePopup(true)}>
-        Cookie Settings
-      </button>
+      <img
+        src={`${process.env.PUBLIC_URL}/cookies.png`}
+        alt="Cookie Settings"
+        className="cookie-button"
+        onClick={() => setShowCookiePopup(true)}
+        width={32}
+        height={32}
+      />
 
       {showCookiePopup && (
         <div className="cookie-popup">
