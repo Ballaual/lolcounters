@@ -3,10 +3,12 @@ import Select from 'react-select';
 import Cookies from 'js-cookie';
 import './App.css';
 
+// Server- und Seiten-URLs als Konstanten definieren
 const SERVER_URL = 'https://ballaual.de:54321';
 const PAGE_URL = 'https://lol.ballaual.de';
 
 function App() {
+  // State-Variablen zur Verwaltung der Formulareingaben und UI-Status
   const [champion, setChampion] = useState(null);
   const [lane, setLane] = useState('');
   const [rank, setRank] = useState('');
@@ -29,6 +31,7 @@ function App() {
   const [showCookiePopup, setShowCookiePopup] = useState(false);
   const [cookiesAccepted, setCookiesAccepted] = useState(Cookies.get('cookiesAccepted') === 'true');
 
+  // Initiales Laden von Theme, Cookies und gespeicherten Werten
   useEffect(() => {
     document.title = "LoL - Counterpick Analyzer";
 
@@ -56,22 +59,25 @@ function App() {
           const parsedChampions = JSON.parse(savedChampions);
           setYourChampions(parsedChampions);
         } catch (e) {
-          console.error('Error parsing champions from cookie:', e);
+          console.error('Fehler beim Parsen der Champions aus Cookies:', e);
         }
       }
     }
   }, [cookiesAccepted]);
 
+  // Theme umschalten und speichern, wenn Cookies akzeptiert wurden
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     document.body.classList.remove(theme);
     document.body.classList.add(newTheme);
+
     if (cookiesAccepted) {
       Cookies.set('theme', newTheme, { expires: 7 });
     }
   };
 
+  // Optionen für Champion, Lane, Rang und Patch laden
   useEffect(() => {
     const loadOptions = async () => {
       try {
@@ -95,7 +101,7 @@ function App() {
           setPatch(patches[patches.length - 1]);
         }
       } catch (error) {
-        console.error('Error loading options:', error);
+        console.error('Fehler beim Laden der Optionen:', error);
       }
     };
 
@@ -115,10 +121,12 @@ function App() {
     loadOptions();
     checkServerStatus();
 
+    // Regelmäßige Überprüfung des Serverstatus
     const interval = setInterval(checkServerStatus, 5000);
     return () => clearInterval(interval);
   }, []);
 
+  // Champions, Lane und Rang in Cookies speichern, wenn akzeptiert
   useEffect(() => {
     if (cookiesAccepted) {
       if (yourChampions.length > 0) {
@@ -145,6 +153,7 @@ function App() {
     }
   }, [rank, cookiesAccepted]);
 
+  // Starten des Pollings zur Überprüfung des Verarbeitungsstatus
   const startProcessingStatusPolling = () => {
     setShowProcessingStatus(true);
     const interval = setInterval(async () => {
@@ -158,13 +167,14 @@ function App() {
           clearInterval(interval);
         }
       } catch (error) {
-        console.error('Error checking processing status:', error);
+        console.error('Fehler beim Abrufen des Verarbeitungsstatus:', error);
       }
     }, 250);
 
     return () => clearInterval(interval);
   };
 
+  // Daten vom Server abrufen
   const fetchData = async () => {
     setLoading(true);
     setHasDataBeenFetched(true);
@@ -189,13 +199,14 @@ function App() {
         setLoadedChampionName(champion.label);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Fehler beim Abrufen der Daten:', error);
     }
 
     setLoading(false);
     setShowProcessingStatus(false);
   };
 
+  // Filtern der Daten basierend auf den ausgewählten Champions
   useEffect(() => {
     if (yourChampions.length > 0) {
       const filtered = data.filter((row) =>
@@ -207,12 +218,15 @@ function App() {
     }
   }, [yourChampions, data]);
 
+  // Champion ändern
   const handleChampionChange = (selectedChampion) => {
     setChampion(selectedChampion);
   };
 
+  // Überprüfen, ob das Formular vollständig ist
   const isFormComplete = champion && lane && rank && patch;
 
+  // Klasse für Fehlermeldung bei fehlenden Daten bestimmen
   const getNoDataMessageClass = () => {
     if (hasDataBeenFetched && filteredData.length === 0) {
       return 'no-data-error';
@@ -220,6 +234,7 @@ function App() {
     return 'no-data';
   };
 
+  // Daten sortieren
   const sortData = (key) => {
     let direction = 'ascending';
     if (sortConfig.key === key && sortConfig.direction === 'ascending') {
@@ -236,6 +251,7 @@ function App() {
     setSortConfig({ key, direction });
   };
 
+  // Sortierpfeile anzeigen
   const getSortArrow = (key) => {
     if (sortConfig.key === key) {
       return sortConfig.direction === 'ascending' ? ' ▲' : ' ▼';
@@ -243,6 +259,7 @@ function App() {
     return '';
   };
 
+  // Cookie-Akzeptanz verarbeiten
   const handleCookiesAcceptance = (accept) => {
     setCookiesAccepted(accept);
     setShowCookiePopup(false);
@@ -260,6 +277,7 @@ function App() {
     }
   };
 
+  // Benutzerdefinierte Styles für das Select-Menü
   const customStyles = {
     control: (styles) => ({
       ...styles,
@@ -287,6 +305,7 @@ function App() {
     }),
   };
 
+  // Benutzerdefinierte Option-Komponenten für Select-Menüs
   const CustomChampionOption = ({ data, innerRef, innerProps, isFocused }) => (
     <div
       ref={innerRef}
@@ -366,6 +385,7 @@ function App() {
     </div>
   );
 
+  // Champion-Tabelle rendern und interaktiv gestalten
   const renderChampionTableCell = (row) => (
     <span style={{ display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => handleChampionClick(row.apiName)}>
       <img
@@ -382,6 +402,7 @@ function App() {
     </span>
   );
 
+  // Champion-Daten zur Analyse anzeigen
   const handleChampionClick = (apiName) => {
     if (champion && lane && rank && patch) {
       const url = `https://lolalytics.com/lol/${apiName}/vs/${champion.value}/build/?lane=${lane}&tier=${rank}&vslane=${lane}&patch=${patch}`;
