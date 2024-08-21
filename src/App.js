@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
 import Cookies from 'js-cookie';
 import './App.css';
+import { Header, Footer, ChampionSelect, RankSelect, LaneSelect, PatchSelect, YourChampionsSelect } from './components';
 
 // Server- und Seiten-URLs als Konstanten definieren
 const SERVER_URL = 'https://ballaual.de:54321';
@@ -22,9 +22,6 @@ function App() {
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [serverStatus, setServerStatus] = useState('Offline');
-  const [processingStatus, setProcessingStatus] = useState({ isProcessing: false, progress: 0, message: '' });
-  const [showProcessingStatus, setShowProcessingStatus] = useState(false);
-  const [hasDataBeenFetched, setHasDataBeenFetched] = useState(false);
   const [loadedChampionName, setLoadedChampionName] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
   const [theme, setTheme] = useState('light');
@@ -153,32 +150,9 @@ function App() {
     }
   }, [rank, cookiesAccepted]);
 
-  // Starten des Pollings zur Überprüfung des Verarbeitungsstatus
-  const startProcessingStatusPolling = () => {
-    setShowProcessingStatus(true);
-    const interval = setInterval(async () => {
-      try {
-        const response = await fetch(`${SERVER_URL}/processing-status`);
-        const status = await response.json();
-        setProcessingStatus(status);
-
-        if (!status.isProcessing) {
-          setShowProcessingStatus(false);
-          clearInterval(interval);
-        }
-      } catch (error) {
-        console.error('Fehler beim Abrufen des Verarbeitungsstatus:', error);
-      }
-    }, 250);
-
-    return () => clearInterval(interval);
-  };
-
   // Daten vom Server abrufen
   const fetchData = async () => {
     setLoading(true);
-    setHasDataBeenFetched(true);
-    startProcessingStatusPolling();
 
     try {
       const response = await fetch(`${SERVER_URL}/fetch-data?champion=${champion.value}&lane=${lane}&tier=${rank}&vslane=${lane}&patch=${patch}`);
@@ -203,7 +177,6 @@ function App() {
     }
 
     setLoading(false);
-    setShowProcessingStatus(false);
   };
 
   // Filtern der Daten basierend auf den ausgewählten Champions
@@ -225,14 +198,6 @@ function App() {
 
   // Überprüfen, ob das Formular vollständig ist
   const isFormComplete = champion && lane && rank && patch;
-
-  // Klasse für Fehlermeldung bei fehlenden Daten bestimmen
-  const getNoDataMessageClass = () => {
-    if (hasDataBeenFetched && filteredData.length === 0) {
-      return 'no-data-error';
-    }
-    return 'no-data';
-  };
 
   // Daten sortieren
   const sortData = (key) => {
@@ -412,62 +377,52 @@ function App() {
 
   return (
     <div className={`app ${theme}`}>
-      <header className="header">
-        <div className="logo"></div>
-        <span className="header-title">Counterpick Analyzer</span>
-        <div className="theme-switcher">
-          <label>{theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}</label>
-          <label className="switch">
-            <input type="checkbox" checked={theme === 'dark'} onChange={toggleTheme} />
-            <span className="slider round"></span>
-          </label>
-        </div>
-      </header>
+
+      <Header theme={theme} toggleTheme={toggleTheme} />
 
       <div className="main-content">
         <div className="form-container">
           <h2>Analyzing</h2>
           <div className="form-row">
-            <div className="form-group">
-              <label>
-                Enemy Champion:<span className="required">*</span>
-                <Select value={champion} onChange={handleChampionChange} options={championOptions} placeholder="Select Champion" styles={customStyles} components={{ Option: CustomChampionOption }} />
-              </label>
-            </div>
-            <div className="form-group">
-              <label>
-                Lane:<span className="required">*</span>
-                <Select value={laneOptions.find(option => option.value === lane)} onChange={option => setLane(option ? option.value : '')} options={laneOptions} placeholder="Select Lane" styles={customStyles} components={{ Option: CustomLaneOption }} />
-              </label>
-            </div>
-            <div className="form-group">
-              <label>
-                Rank:<span className="required">*</span>
-                <Select value={rankOptions.find(option => option.value === rank)} onChange={option => setRank(option ? option.value : '')} options={rankOptions} placeholder="Select Rank" styles={customStyles} components={{ Option: CustomRankOption }} />
-              </label>
-            </div>
-            <div className="form-group">
-              <label>
-                Patch:<span className="required">*</span>
-                <Select value={patchOptions.find(option => option.value === patch)} onChange={option => setPatch(option ? option.value : '')} options={patchOptions} placeholder="Select Patch" styles={customStyles} />
-              </label>
-            </div>
+            <ChampionSelect
+              championOptions={championOptions}
+              champion={champion}
+              handleChampionChange={setChampion}
+              customStyles={customStyles}
+              CustomChampionOption={CustomChampionOption}
+            />
+
+            <LaneSelect
+              laneOptions={laneOptions}
+              lane={lane}
+              setLane={setLane}
+              customStyles={customStyles}
+              CustomLaneOption={CustomLaneOption}
+            />
+
+            <RankSelect
+              rankOptions={rankOptions}
+              rank={rank}
+              setRank={setRank}
+              customStyles={customStyles}
+              CustomRankOption={CustomRankOption}
+            />
+
+            <PatchSelect
+              patchOptions={patchOptions}
+              patch={patch}
+              setPatch={setPatch}
+              customStyles={customStyles}
+            />
           </div>
           <div className="form-row second-row">
-            <div className="form-group your-champs">
-              <label>
-                Your Champions:
-                <Select
-                  isMulti
-                  value={yourChampions}
-                  onChange={setYourChampions}
-                  options={championOptions}
-                  placeholder="Select Your Champions"
-                  styles={customStyles}
-                  components={{ Option: CustomChampionOption }}
-                />
-              </label>
-            </div>
+            <YourChampionsSelect
+              yourChampions={yourChampions}
+              setYourChampions={setYourChampions}
+              championOptions={championOptions}
+              customStyles={customStyles}
+              CustomChampionOption={CustomChampionOption}
+            />
           </div>
           <div className="form-row third-row">
             <button onClick={fetchData} disabled={!isFormComplete || loading} className="btn search-btn">
@@ -481,11 +436,6 @@ function App() {
               Backend:<div className={`server-status ${serverStatus.toLowerCase()}`}>
                 {serverStatus}
               </div>
-              {showProcessingStatus && (
-                <div className="processing-status">
-                  {processingStatus.message} ({processingStatus.progress}%)
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -522,9 +472,7 @@ function App() {
         </table>
       </div>
 
-      <footer className="footer">
-        Idea by Justdom | Made by Ballaual | v. 1.1.5
-      </footer>
+      <Footer />
 
       <img
         src={`${process.env.PUBLIC_URL}/cookies.png`}
