@@ -3,9 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 // Pfad zur lanes.json Datei
-const lanesFilePath = path.resolve(__dirname, 'public', 'lanes.json');
+const lanesFilePath = path.resolve(__dirname, '..', 'public', 'lanes.json');
 // Verzeichnis, in dem die Bilder gespeichert werden
-const imageDir = path.resolve(__dirname, 'public', 'lanes');
+const imageDir = path.resolve(__dirname, '..', 'public', 'lanes');
 
 // Funktion, um die Lanes-Liste aus lanes.json zu laden
 const loadLanes = () => {

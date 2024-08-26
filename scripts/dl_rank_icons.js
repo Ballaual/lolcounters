@@ -3,9 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 // Pfad zur ranks.json Datei
-const ranksFilePath = path.resolve(__dirname, 'public', 'ranks.json');
+const ranksFilePath = path.resolve(__dirname, '..', 'public', 'ranks.json');
 // Verzeichnis, in dem die Bilder gespeichert werden
-const imageDir = path.resolve(__dirname, 'public', 'ranks');
+const imageDir = path.resolve(__dirname, '..', 'public', 'ranks');
 
 // Funktion, um die Ranks-Liste aus ranks.json zu laden
 const loadRanks = () => {

@@ -3,9 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 // Pfad zur champions.json Datei
-const championsFilePath = path.resolve(__dirname, 'public', 'champions.json');
+const championsFilePath = path.resolve(__dirname, '..', 'public', 'champions.json');
 // Verzeichnis, in dem die Bilder gespeichert werden
-const imageDir = path.resolve(__dirname, 'public', 'champions');
+const imageDir = path.resolve(__dirname, '..', 'public', 'champions');
 
 // Funktion, um die Champions-Liste aus champions.json zu laden
 const loadChampions = () => {
