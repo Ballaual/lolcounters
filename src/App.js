@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import './App.css';
 import { Header, Footer, ChampionSelect, RankSelect, LaneSelect, PatchSelect, YourChampionsSelect } from './components';
+import CookiePopup from './components/CookiePopup'; // Importing the new CookiePopup component
 
 // Server- und Seiten-URLs als Konstanten definieren
 const SERVER_URL = 'https://ballaual.de:54321';
@@ -73,6 +74,132 @@ function App() {
       Cookies.set('theme', newTheme, { expires: 7 });
     }
   };
+
+  // Cookie-Akzeptanz verarbeiten
+  const handleCookiesAcceptance = (accept) => {
+    setCookiesAccepted(accept);
+    setShowCookiePopup(false);
+
+    Cookies.set('cookiesPopupShown', 'true', { expires: 30 });
+
+    if (accept) {
+      Cookies.set('cookiesAccepted', 'true', { expires: 30 });
+    } else {
+      Cookies.remove('cookiesAccepted');
+      Cookies.remove('theme');
+      Cookies.remove('lane');
+      Cookies.remove('rank');
+      Cookies.remove('yourChampions');
+    }
+  };
+
+  // Benutzerdefinierte Styles für das Select-Menü
+  const customStyles = {
+    control: (styles) => ({
+      ...styles,
+      backgroundColor: '#fff',
+      color: '#000',
+      borderColor: '#ccc',
+    }),
+    menu: (styles) => ({
+      ...styles,
+      backgroundColor: '#fff',
+      color: '#000',
+    }),
+    option: (styles, { isFocused }) => ({
+      ...styles,
+      backgroundColor: isFocused ? '#e0e0e0' : '#fff',
+      color: '#000',
+    }),
+    multiValueRemove: (styles, { isFocused }) => ({
+      ...styles,
+      color: '#000',
+      ':hover': {
+        backgroundColor: isFocused ? '#ccc' : undefined,
+        color: '#000',
+      },
+    }),
+  };
+
+  // Benutzerdefinierte Option-Komponenten für Select-Menüs
+  const CustomChampionOption = ({ data, innerRef, innerProps, isFocused }) => (
+    <div
+      ref={innerRef}
+      {...innerProps}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '4px',
+        backgroundColor: isFocused ? '#e0e0e0' : '#fff',
+        cursor: 'pointer'
+      }}
+    >
+      <img
+        src={`${process.env.PUBLIC_URL}/champions/${data.value.toLowerCase()}.webp`}
+        alt={data.label}
+        style={{
+          width: '32px',
+          height: '32px',
+          borderRadius: '50%',
+          marginRight: '8px',
+          marginLeft: '4px'
+        }}
+      />
+      <span>{data.label}</span>
+    </div>
+  );
+
+  const CustomRankOption = ({ data, innerRef, innerProps, isFocused }) => (
+    <div
+      ref={innerRef}
+      {...innerProps}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '4px',
+        backgroundColor: isFocused ? '#e0e0e0' : '#fff',
+        cursor: 'pointer'
+      }}
+    >
+      <img
+        src={`${process.env.PUBLIC_URL}/ranks/${data.apiName2.toLowerCase()}.webp`}
+        alt={data.label}
+        style={{
+          width: '32px',
+          height: '32px',
+          marginRight: '8px',
+          marginLeft: '4px'
+        }}
+      />
+      <span>{data.label}</span>
+    </div>
+  );
+
+  const CustomLaneOption = ({ data, innerRef, innerProps, isFocused }) => (
+    <div
+      ref={innerRef}
+      {...innerProps}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '4px',
+        backgroundColor: isFocused ? '#e0e0e0' : '#fff',
+        cursor: 'pointer'
+      }}
+    >
+      <img
+        src={`${process.env.PUBLIC_URL}/lanes/${data.value.toLowerCase()}.webp`}
+        alt={data.label}
+        style={{
+          width: '32px',
+          height: '32px',
+          marginRight: '8px',
+          marginLeft: '4px'
+        }}
+      />
+      <span>{data.label}</span>
+    </div>
+  );
 
   // Optionen für Champion, Lane, Rang und Patch laden
   useEffect(() => {
@@ -224,137 +351,11 @@ function App() {
     return '';
   };
 
-  // Cookie-Akzeptanz verarbeiten
-  const handleCookiesAcceptance = (accept) => {
-    setCookiesAccepted(accept);
-    setShowCookiePopup(false);
-
-    Cookies.set('cookiesPopupShown', 'true', { expires: 30 });
-
-    if (accept) {
-      Cookies.set('cookiesAccepted', 'true', { expires: 30 });
-    } else {
-      Cookies.remove('cookiesAccepted');
-      Cookies.remove('theme');
-      Cookies.remove('lane');
-      Cookies.remove('rank');
-      Cookies.remove('yourChampions');
-    }
-  };
-
-  // Benutzerdefinierte Styles für das Select-Menü
-  const customStyles = {
-    control: (styles) => ({
-      ...styles,
-      backgroundColor: '#fff',
-      color: '#000',
-      borderColor: '#ccc',
-    }),
-    menu: (styles) => ({
-      ...styles,
-      backgroundColor: '#fff',
-      color: '#000',
-    }),
-    option: (styles, { isFocused }) => ({
-      ...styles,
-      backgroundColor: isFocused ? '#e0e0e0' : '#fff',
-      color: '#000',
-    }),
-    multiValueRemove: (styles, { isFocused }) => ({
-      ...styles,
-      color: '#000',
-      ':hover': {
-        backgroundColor: isFocused ? '#ccc' : undefined,
-        color: '#000',
-      },
-    }),
-  };
-
-  // Benutzerdefinierte Option-Komponenten für Select-Menüs
-  const CustomChampionOption = ({ data, innerRef, innerProps, isFocused }) => (
-    <div
-      ref={innerRef}
-      {...innerProps}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        padding: '4px',
-        backgroundColor: isFocused ? '#e0e0e0' : '#fff',
-        cursor: 'pointer'
-      }}
-    >
-      <img
-        src={`https://cdn5.lolalytics.com/champx92/${data.value.toLowerCase()}.webp`}
-        alt={data.label}
-        style={{
-          width: '32px',
-          height: '32px',
-          borderRadius: '50%',
-          marginRight: '8px',
-          marginLeft: '4px'
-        }}
-      />
-      <span>{data.label}</span>
-    </div>
-  );
-
-  const CustomRankOption = ({ data, innerRef, innerProps, isFocused }) => (
-    <div
-      ref={innerRef}
-      {...innerProps}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        padding: '4px',
-        backgroundColor: isFocused ? '#e0e0e0' : '#fff',
-        cursor: 'pointer'
-      }}
-    >
-      <img
-        src={`https://cdn5.lolalytics.com/emblem80/${data.apiName2.toLowerCase()}.webp`}
-        alt={data.label}
-        style={{
-          width: '32px',
-          height: '32px',
-          marginRight: '8px',
-          marginLeft: '4px'
-        }}
-      />
-      <span>{data.label}</span>
-    </div>
-  );
-
-  const CustomLaneOption = ({ data, innerRef, innerProps, isFocused }) => (
-    <div
-      ref={innerRef}
-      {...innerProps}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        padding: '4px',
-        backgroundColor: isFocused ? '#e0e0e0' : '#fff',
-        cursor: 'pointer'
-      }}
-    >
-      <img
-        src={`https://cdn5.lolalytics.com/lane54/${data.value.toLowerCase()}.webp`}
-        alt={data.label}
-        style={{
-          width: '32px',
-          height: '32px',
-          marginRight: '8px',
-          marginLeft: '4px'
-        }}
-      />
-      <span>{data.label}</span>
-    </div>
-  );
-
   // Champion-Tabelle rendern und interaktiv gestalten
   const renderChampionTableCell = (row) => (
     <span style={{ display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => handleChampionClick(row.apiName)}>
       <img
-        src={`https://cdn5.lolalytics.com/champx92/${row.apiName.toLowerCase()}.webp`}
+        src={`${process.env.PUBLIC_URL}/champions/${row.apiName.toLowerCase()}.webp`}
         alt={row.championName}
         style={{
           width: '32px',
@@ -387,7 +388,7 @@ function App() {
             <ChampionSelect
               championOptions={championOptions}
               champion={champion}
-              handleChampionChange={setChampion}
+              handleChampionChange={handleChampionChange}
               customStyles={customStyles}
               CustomChampionOption={CustomChampionOption}
             />
@@ -483,17 +484,13 @@ function App() {
         height={32}
       />
 
-      {showCookiePopup && (
-        <div className="cookie-popup">
-          <div className="cookie-popup-content">
-            <button className="close-popup" onClick={() => setShowCookiePopup(false)}>×</button>
-            <h2>Cookie Settings</h2>
-            <p>Do you accept cookies for improved user experience?</p>
-            <button className="btn accept" onClick={() => handleCookiesAcceptance(true)}>Accept</button>
-            <button className="btn decline" onClick={() => handleCookiesAcceptance(false)}>Decline</button>
-          </div>
-        </div>
-      )}
+      {/* Using the CookiePopup component */}
+      <CookiePopup
+        show={showCookiePopup}
+        onAccept={() => handleCookiesAcceptance(true)}
+        onDecline={() => handleCookiesAcceptance(false)}
+        onClose={() => setShowCookiePopup(false)}
+      />
     </div>
   );
 }

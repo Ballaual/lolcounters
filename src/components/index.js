@@ -5,3 +5,4 @@ export { default as LaneSelect } from './LaneSelect';
 export { default as RankSelect } from './RankSelect';
 export { default as PatchSelect } from './PatchSelect';
 export { default as YourChampionsSelect } from './YourChampionsSelect';
+export { default as CookiePopup } from './CookiePopup';
