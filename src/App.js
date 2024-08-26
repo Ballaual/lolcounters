@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import './App.css';
 import { Header, Footer, ChampionSelect, RankSelect, LaneSelect, PatchSelect, YourChampionsSelect } from './components';
-import CookiePopup from './components/CookiePopup';
-import StatusPage from './pages/StatusPage';
-import ChangesPage from './pages/ChangesPage';
+import CookiePopup from './components/CookiePopup'; // Importing the new CookiePopup component
 
 // Server- und Seiten-URLs als Konstanten definieren
 const SERVER_URL = 'https://ballaual.de:54321';
 const PAGE_URL = 'https://lol.ballaual.de';
 
 function App() {
+  // State-Variablen zur Verwaltung der Formulareingaben und UI-Status
   const [champion, setChampion] = useState(null);
   const [lane, setLane] = useState('');
   const [rank, setRank] = useState('');
@@ -122,6 +120,86 @@ function App() {
       },
     }),
   };
+
+  // Benutzerdefinierte Option-Komponenten für Select-Menüs
+  const CustomChampionOption = ({ data, innerRef, innerProps, isFocused }) => (
+    <div
+      ref={innerRef}
+      {...innerProps}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '4px',
+        backgroundColor: isFocused ? '#e0e0e0' : '#fff',
+        cursor: 'pointer'
+      }}
+    >
+      <img
+        src={`${process.env.PUBLIC_URL}/champions/${data.value.toLowerCase()}.webp`}
+        alt={data.label}
+        style={{
+          width: '32px',
+          height: '32px',
+          borderRadius: '50%',
+          marginRight: '8px',
+          marginLeft: '4px'
+        }}
+      />
+      <span>{data.label}</span>
+    </div>
+  );
+
+  const CustomRankOption = ({ data, innerRef, innerProps, isFocused }) => (
+    <div
+      ref={innerRef}
+      {...innerProps}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '4px',
+        backgroundColor: isFocused ? '#e0e0e0' : '#fff',
+        cursor: 'pointer'
+      }}
+    >
+      <img
+        src={`${process.env.PUBLIC_URL}/ranks/${data.apiName2.toLowerCase()}.webp`}
+        alt={data.label}
+        style={{
+          width: '32px',
+          height: '32px',
+          marginRight: '8px',
+          marginLeft: '4px'
+        }}
+      />
+      <span>{data.label}</span>
+    </div>
+  );
+
+  const CustomLaneOption = ({ data, innerRef, innerProps, isFocused }) => (
+    <div
+      ref={innerRef}
+      {...innerProps}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '4px',
+        backgroundColor: isFocused ? '#e0e0e0' : '#fff',
+        cursor: 'pointer'
+      }}
+    >
+      <img
+        src={`${process.env.PUBLIC_URL}/lanes/${data.value.toLowerCase()}.webp`}
+        alt={data.label}
+        style={{
+          width: '32px',
+          height: '32px',
+          marginRight: '8px',
+          marginLeft: '4px'
+        }}
+      />
+      <span>{data.label}</span>
+    </div>
+  );
 
   // Optionen für Champion, Lane, Rang und Patch laden
   useEffect(() => {
@@ -299,123 +377,121 @@ function App() {
   };
 
   return (
-    <Router>
-      <div className={`app ${theme}`}>
-        <Header theme={theme} toggleTheme={toggleTheme} />
+    <div className={`app ${theme}`}>
 
-        <Routes>
-          {/* Hauptseite */}
-          <Route path="/" element={
-            <div className="main-content">
-              <div className="form-container">
-                <h2>Analyzing</h2>
-                <div className="form-row">
-                  <ChampionSelect
-                    championOptions={championOptions}
-                    champion={champion}
-                    handleChampionChange={handleChampionChange}
-                    customStyles={customStyles}
-                  />
+      <Header theme={theme} toggleTheme={toggleTheme} />
 
-                  <LaneSelect
-                    laneOptions={laneOptions}
-                    lane={lane}
-                    setLane={setLane}
-                    customStyles={customStyles}
-                  />
+      <div className="main-content">
+        <div className="form-container">
+          <h2>Analyzing</h2>
+          <div className="form-row">
+            <ChampionSelect
+              championOptions={championOptions}
+              champion={champion}
+              handleChampionChange={handleChampionChange}
+              customStyles={customStyles}
+              CustomChampionOption={CustomChampionOption}
+            />
 
-                  <RankSelect
-                    rankOptions={rankOptions}
-                    rank={rank}
-                    setRank={setRank}
-                    customStyles={customStyles}
-                  />
+            <LaneSelect
+              laneOptions={laneOptions}
+              lane={lane}
+              setLane={setLane}
+              customStyles={customStyles}
+              CustomLaneOption={CustomLaneOption}
+            />
 
-                  <PatchSelect
-                    patchOptions={patchOptions}
-                    patch={patch}
-                    setPatch={setPatch}
-                    customStyles={customStyles}
-                  />
+            <RankSelect
+              rankOptions={rankOptions}
+              rank={rank}
+              setRank={setRank}
+              customStyles={customStyles}
+              CustomRankOption={CustomRankOption}
+            />
+
+            <PatchSelect
+              patchOptions={patchOptions}
+              patch={patch}
+              setPatch={setPatch}
+              customStyles={customStyles}
+            />
+          </div>
+          <div className="form-row second-row">
+            <YourChampionsSelect
+              yourChampions={yourChampions}
+              setYourChampions={setYourChampions}
+              championOptions={championOptions}
+              customStyles={customStyles}
+              CustomChampionOption={CustomChampionOption}
+            />
+          </div>
+          <div className="form-row third-row">
+            <button onClick={fetchData} disabled={!isFormComplete || loading} className="btn search-btn">
+              {loading ? (
+                <div className="loading-animation">
+                  <div className="spinner"></div>
                 </div>
-                <div className="form-row second-row">
-                  <YourChampionsSelect
-                    yourChampions={yourChampions}
-                    setYourChampions={setYourChampions}
-                    championOptions={championOptions}
-                    customStyles={customStyles}
-                  />
-                </div>
-                <div className="form-row third-row">
-                  <button onClick={fetchData} disabled={!isFormComplete || loading} className="btn search-btn">
-                    {loading ? (
-                      <div className="loading-animation">
-                        <div className="spinner"></div>
-                      </div>
-                    ) : 'Search'}
-                  </button>
-                  <div className="status-container">
-                    Backend:
-                    <div className={`server-status ${serverStatus.toLowerCase()}`}>{serverStatus}</div>
-                  </div>
-                </div>
+              ) : 'Search'}
+            </button>
+            <div className="status-container">
+              Backend:<div className={`server-status ${serverStatus.toLowerCase()}`}>
+                {serverStatus}
               </div>
-
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th onClick={() => sortData('championName')}>
-                      Champion {getSortArrow('championName')}
-                    </th>
-                    <th onClick={() => sortData('winRateVs')}>
-                      {loadedChampionName ? `WR vs ${loadedChampionName}` : "WR vs"} (%) {getSortArrow('winRateVs')}
-                    </th>
-                    <th onClick={() => sortData('allChampsWinRate')}>Champ WR (%) {getSortArrow('allChampsWinRate')}</th>
-                    <th onClick={() => sortData('gamesCount')}>Matches (&gt;100) {getSortArrow('gamesCount')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredData.map((row, index) => (
-                    <tr key={index}>
-                      <td>
-                        {row.apiName ? renderChampionTableCell(row) : <span>{row.championName}</span>}
-                      </td>
-                      <td>{row.winRateVs}</td>
-                      <td>{row.allChampsWinRate}</td>
-                      <td>{row.gamesCount}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </div>
-          } />
+          </div>
+        </div>
 
-          {/* Status-Seite */}
-          <Route path="/status" element={<StatusPage serverStatus={serverStatus} />} />
-
-          {/* Changes-Seite */}
-          <Route path="/changes" element={<ChangesPage />} />
-        </Routes>
-
-        <Footer />
-        <img
-          src={`${process.env.PUBLIC_URL}/cookies.png`}
-          alt="Cookie Settings"
-          className="cookie-button"
-          onClick={() => setShowCookiePopup(true)}
-          width={32}
-          height={32}
-        />
-
-        {/* Using the CookiePopup component */}
-        <CookiePopup
-          show={showCookiePopup}
-          onAccept={() => handleCookiesAcceptance(true)}
-          onDecline={() => handleCookiesAcceptance(false)}
-          onClose={() => setShowCookiePopup(false)}
-        />
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th onClick={() => sortData('championName')}>
+                Champion {getSortArrow('championName')}
+              </th>
+              <th onClick={() => sortData('winRateVs')}>
+                {loadedChampionName ? `WR vs ${loadedChampionName}` : "WR vs"} (%) {getSortArrow('winRateVs')}
+              </th>
+              <th onClick={() => sortData('allChampsWinRate')}>Champ WR (%) {getSortArrow('allChampsWinRate')}</th>
+              <th onClick={() => sortData('gamesCount')}>Matches (&gt;100) {getSortArrow('gamesCount')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredData.map((row, index) => (
+              <tr key={index}>
+                <td>
+                  {row.apiName ? (
+                    renderChampionTableCell(row)
+                  ) : (
+                    <span>{row.championName}</span>
+                  )}
+                </td>
+                <td>{row.winRateVs}</td>
+                <td>{row.allChampsWinRate}</td>
+                <td>{row.gamesCount}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-    </Router>
+
+      <Footer />
+
+      <img
+        src={`${process.env.PUBLIC_URL}/cookies.png`}
+        alt="Cookie Settings"
+        className="cookie-button"
+        onClick={() => setShowCookiePopup(true)}
+        width={32}
+        height={32}
+      />
+
+      {/* Using the CookiePopup component */}
+      <CookiePopup
+        show={showCookiePopup}
+        onAccept={() => handleCookiesAcceptance(true)}
+        onDecline={() => handleCookiesAcceptance(false)}
+        onClose={() => setShowCookiePopup(false)}
+      />
+    </div>
   );
 }
 
