@@ -1,9 +1,10 @@
 import React from 'react';
+import packageJson from '../../package.json';
 
 function Footer() {
     return (
         <footer className="footer">
-            Idea by Justdom | Made by Ballaual | v. 1.1.6.1
+            Idea by Justdom | Made by Ballaual | v. {packageJson.version}
         </footer>
     );
 }
