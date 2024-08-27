@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import './App.css';
-import { Header, Footer, ChampionSelect, RankSelect, LaneSelect, PatchSelect, YourChampionsSelect } from './components';
-import CookiePopup from './components/CookiePopup'; // Importing the new CookiePopup component
+import { Header, Footer, ChampionSelect, RankSelect, LaneSelect, PatchSelect, YourChampionsSelect, CookiePopup } from './components';
+import { sortData, sortArrow } from './utils/sortData';
 
 // Server- und Seiten-URLs als Konstanten definieren
 const SERVER_URL = 'https://ballaual.de:54321';
@@ -326,31 +326,6 @@ function App() {
   // Überprüfen, ob das Formular vollständig ist
   const isFormComplete = champion && lane && rank && patch;
 
-  // Daten sortieren
-  const sortData = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
-    }
-
-    const sortedData = [...filteredData].sort((a, b) => {
-      if (a[key] < b[key]) return direction === 'ascending' ? -1 : 1;
-      if (a[key] > b[key]) return direction === 'ascending' ? 1 : -1;
-      return 0;
-    });
-
-    setFilteredData(sortedData);
-    setSortConfig({ key, direction });
-  };
-
-  // Sortierpfeile anzeigen
-  const getSortArrow = (key) => {
-    if (sortConfig.key === key) {
-      return sortConfig.direction === 'ascending' ? ' ▲' : ' ▼';
-    }
-    return '';
-  };
-
   // Champion-Tabelle rendern und interaktiv gestalten
   const renderChampionTableCell = (row) => (
     <span style={{ display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => handleChampionClick(row.apiName)}>
@@ -374,6 +349,13 @@ function App() {
       const url = `https://lolalytics.com/lol/${apiName}/vs/${champion.value}/build/?lane=${lane}&tier=${rank}&vslane=${lane}&patch=${patch}`;
       window.open(url, '_blank');
     }
+  };
+
+  // Sortierfunktion anwenden
+  const applySort = (key) => {
+    const { sortedData, newConfig } = sortData(key, filteredData, sortConfig);
+    setFilteredData(sortedData);
+    setSortConfig(newConfig);
   };
 
   return (
@@ -444,14 +426,14 @@ function App() {
         <table className="data-table">
           <thead>
             <tr>
-              <th onClick={() => sortData('championName')}>
-                Champion {getSortArrow('championName')}
+              <th onClick={() => applySort('championName')}>
+                Champion {getSortArrow('championName', sortConfig)}
               </th>
-              <th onClick={() => sortData('winRateVs')}>
-                {loadedChampionName ? `WR vs ${loadedChampionName}` : "WR vs"} (%) {getSortArrow('winRateVs')}
+              <th onClick={() => applySort('winRateVs')}>
+                {loadedChampionName ? `WR vs ${loadedChampionName}` : "WR vs"} (%) {getSortArrow('winRateVs', sortConfig)}
               </th>
-              <th onClick={() => sortData('allChampsWinRate')}>Champ WR (%) {getSortArrow('allChampsWinRate')}</th>
-              <th onClick={() => sortData('gamesCount')}>Matches (&gt;100) {getSortArrow('gamesCount')}</th>
+              <th onClick={() => applySort('allChampsWinRate')}>Champ WR (%) {getSortArrow('allChampsWinRate', sortConfig)}</th>
+              <th onClick={() => applySort('gamesCount')}>Matches (&gt;100) {getSortArrow('gamesCount', sortConfig)}</th>
             </tr>
           </thead>
           <tbody>
