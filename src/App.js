@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import Cookies from 'js-cookie';
 import './App.css';
-import { Header, Footer, ChampionSelect, RankSelect, LaneSelect, PatchSelect, YourChampionsSelect } from './components';
-import CookiePopup from './components/CookiePopup'; // Importing the new CookiePopup component
+import Cookies from 'js-cookie';
+import { Header, Footer, ChampionSelect, RankSelect, LaneSelect, PatchSelect, YourChampionsSelect, CookiePopup } from './components';
+import { sortData, getSortArrow } from './utils/sortData';
+import {
+  loadThemeFromCookies,
+  loadCookiePreferences,
+  loadSavedValuesFromCookies,
+  saveThemeToCookies,
+  handleCookiesAcceptance,
+  saveDataToCookies
+} from './utils/manageCookies';
 
 // Server- und Seiten-URLs als Konstanten definieren
 const SERVER_URL = 'https://ballaual.de:54321';
 const PAGE_URL = 'https://lol.ballaual.de';
 
 function App() {
-  // State-Variablen zur Verwaltung der Formulareingaben und UI-Status
   const [champion, setChampion] = useState(null);
   const [lane, setLane] = useState('');
   const [rank, setRank] = useState('');
@@ -29,71 +36,46 @@ function App() {
   const [showCookiePopup, setShowCookiePopup] = useState(false);
   const [cookiesAccepted, setCookiesAccepted] = useState(Cookies.get('cookiesAccepted') === 'true');
 
-  // Initiales Laden von Theme, Cookies und gespeicherten Werten
+  // Initial loading of theme, cookies, and saved values
   useEffect(() => {
     document.title = "LoL - Counterpick Analyzer";
 
-    const savedTheme = Cookies.get('theme');
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.body.classList.add(savedTheme);
-    }
-
-    if (Cookies.get('cookiesPopupShown')) {
-      setCookiesAccepted(Cookies.get('cookiesAccepted') === 'true');
-    } else {
-      setShowCookiePopup(true);
-    }
-
-    if (cookiesAccepted) {
-      const savedLane = Cookies.get('lane');
-      const savedRank = Cookies.get('rank');
-      const savedChampions = Cookies.get('yourChampions');
-
-      if (savedLane) setLane(savedLane);
-      if (savedRank) setRank(savedRank);
-      if (savedChampions) {
-        try {
-          const parsedChampions = JSON.parse(savedChampions);
-          setYourChampions(parsedChampions);
-        } catch (e) {
-          console.error('Fehler beim Parsen der Champions aus Cookies:', e);
-        }
-      }
-    }
+    loadThemeFromCookies(setTheme);
+    loadCookiePreferences(setCookiesAccepted, setShowCookiePopup);
+    loadSavedValuesFromCookies(cookiesAccepted, setLane, setRank, setYourChampions);
   }, [cookiesAccepted]);
 
-  // Theme umschalten und speichern, wenn Cookies akzeptiert wurden
+  // Toggle theme and save to cookies if accepted
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     document.body.classList.remove(theme);
     document.body.classList.add(newTheme);
 
-    if (cookiesAccepted) {
-      Cookies.set('theme', newTheme, { expires: 7 });
-    }
+    saveThemeToCookies(newTheme, cookiesAccepted);
   };
 
-  // Cookie-Akzeptanz verarbeiten
-  const handleCookiesAcceptance = (accept) => {
-    setCookiesAccepted(accept);
-    setShowCookiePopup(false);
-
-    Cookies.set('cookiesPopupShown', 'true', { expires: 30 });
-
-    if (accept) {
-      Cookies.set('cookiesAccepted', 'true', { expires: 30 });
-    } else {
-      Cookies.remove('cookiesAccepted');
-      Cookies.remove('theme');
-      Cookies.remove('lane');
-      Cookies.remove('rank');
-      Cookies.remove('yourChampions');
-    }
+  // Handle cookie acceptance
+  const handleCookiesAcceptanceWrapper = (accept) => {
+    handleCookiesAcceptance(accept, setCookiesAccepted, setShowCookiePopup);
   };
 
-  // Benutzerdefinierte Styles für das Select-Menü
+  // Save selected champions to cookies when accepted
+  useEffect(() => {
+    saveDataToCookies('yourChampions', JSON.stringify(yourChampions), cookiesAccepted);
+  }, [yourChampions, cookiesAccepted]);
+
+  // Save lane selection to cookies when accepted
+  useEffect(() => {
+    saveDataToCookies('lane', lane, cookiesAccepted);
+  }, [lane, cookiesAccepted]);
+
+  // Save rank selection to cookies when accepted
+  useEffect(() => {
+    saveDataToCookies('rank', rank, cookiesAccepted);
+  }, [rank, cookiesAccepted]);
+
+  // Custom styles for select menus
   const customStyles = {
     control: (styles) => ({
       ...styles,
@@ -121,7 +103,6 @@ function App() {
     }),
   };
 
-  // Benutzerdefinierte Option-Komponenten für Select-Menüs
   const CustomChampionOption = ({ data, innerRef, innerProps, isFocused }) => (
     <div
       ref={innerRef}
@@ -201,7 +182,7 @@ function App() {
     </div>
   );
 
-  // Optionen für Champion, Lane, Rang und Patch laden
+  // Load champion, lane, rank, and patch options
   useEffect(() => {
     const loadOptions = async () => {
       try {
@@ -225,7 +206,7 @@ function App() {
           setPatch(patches[patches.length - 1]);
         }
       } catch (error) {
-        console.error('Fehler beim Laden der Optionen:', error);
+        console.error('Error loading options:', error);
       }
     };
 
@@ -245,39 +226,11 @@ function App() {
     loadOptions();
     checkServerStatus();
 
-    // Regelmäßige Überprüfung des Serverstatus
     const interval = setInterval(checkServerStatus, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  // Champions, Lane und Rang in Cookies speichern, wenn akzeptiert
-  useEffect(() => {
-    if (cookiesAccepted) {
-      if (yourChampions.length > 0) {
-        Cookies.set('yourChampions', JSON.stringify(yourChampions), { expires: 7, secure: true, sameSite: 'Strict' });
-      } else {
-        Cookies.remove('yourChampions');
-      }
-    }
-  }, [yourChampions, cookiesAccepted]);
-
-  useEffect(() => {
-    if (lane && cookiesAccepted) {
-      Cookies.set('lane', lane, { expires: 7, secure: true, sameSite: 'Strict' });
-    } else if (!cookiesAccepted) {
-      Cookies.remove('lane');
-    }
-  }, [lane, cookiesAccepted]);
-
-  useEffect(() => {
-    if (rank && cookiesAccepted) {
-      Cookies.set('rank', rank, { expires: 7, secure: true, sameSite: 'Strict' });
-    } else if (!cookiesAccepted) {
-      Cookies.remove('rank');
-    }
-  }, [rank, cookiesAccepted]);
-
-  // Daten vom Server abrufen
+  // Fetch data from the server
   const fetchData = async () => {
     setLoading(true);
 
@@ -300,13 +253,13 @@ function App() {
         setLoadedChampionName(champion.label);
       }
     } catch (error) {
-      console.error('Fehler beim Abrufen der Daten:', error);
+      console.error('Error fetching data:', error);
     }
 
     setLoading(false);
   };
 
-  // Filtern der Daten basierend auf den ausgewählten Champions
+  // Filter data based on selected champions
   useEffect(() => {
     if (yourChampions.length > 0) {
       const filtered = data.filter((row) =>
@@ -318,40 +271,15 @@ function App() {
     }
   }, [yourChampions, data]);
 
-  // Champion ändern
+  // Change champion selection
   const handleChampionChange = (selectedChampion) => {
     setChampion(selectedChampion);
   };
 
-  // Überprüfen, ob das Formular vollständig ist
+  // Check if the form is complete
   const isFormComplete = champion && lane && rank && patch;
 
-  // Daten sortieren
-  const sortData = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
-    }
-
-    const sortedData = [...filteredData].sort((a, b) => {
-      if (a[key] < b[key]) return direction === 'ascending' ? -1 : 1;
-      if (a[key] > b[key]) return direction === 'ascending' ? 1 : -1;
-      return 0;
-    });
-
-    setFilteredData(sortedData);
-    setSortConfig({ key, direction });
-  };
-
-  // Sortierpfeile anzeigen
-  const getSortArrow = (key) => {
-    if (sortConfig.key === key) {
-      return sortConfig.direction === 'ascending' ? ' ▲' : ' ▼';
-    }
-    return '';
-  };
-
-  // Champion-Tabelle rendern und interaktiv gestalten
+  // Render champion table cell
   const renderChampionTableCell = (row) => (
     <span style={{ display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => handleChampionClick(row.apiName)}>
       <img
@@ -368,7 +296,7 @@ function App() {
     </span>
   );
 
-  // Champion-Daten zur Analyse anzeigen
+  // Handle champion click and open URL for analysis
   const handleChampionClick = (apiName) => {
     if (champion && lane && rank && patch) {
       const url = `https://lolalytics.com/lol/${apiName}/vs/${champion.value}/build/?lane=${lane}&tier=${rank}&vslane=${lane}&patch=${patch}`;
@@ -376,9 +304,15 @@ function App() {
     }
   };
 
+  // Apply sorting to the data
+  const applySort = (key) => {
+    const { sortedData, newConfig } = sortData(key, filteredData, sortConfig);
+    setFilteredData(sortedData);
+    setSortConfig(newConfig);
+  };
+
   return (
     <div className={`app ${theme}`}>
-
       <Header theme={theme} toggleTheme={toggleTheme} />
 
       <div className="main-content">
@@ -444,14 +378,14 @@ function App() {
         <table className="data-table">
           <thead>
             <tr>
-              <th onClick={() => sortData('championName')}>
-                Champion {getSortArrow('championName')}
+              <th onClick={() => applySort('championName')}>
+                Champion {getSortArrow('championName', sortConfig)}
               </th>
-              <th onClick={() => sortData('winRateVs')}>
-                {loadedChampionName ? `WR vs ${loadedChampionName}` : "WR vs"} (%) {getSortArrow('winRateVs')}
+              <th onClick={() => applySort('winRateVs')}>
+                {loadedChampionName ? `WR vs ${loadedChampionName}` : "WR vs"} (%) {getSortArrow('winRateVs', sortConfig)}
               </th>
-              <th onClick={() => sortData('allChampsWinRate')}>Champ WR (%) {getSortArrow('allChampsWinRate')}</th>
-              <th onClick={() => sortData('gamesCount')}>Matches (&gt;100) {getSortArrow('gamesCount')}</th>
+              <th onClick={() => applySort('allChampsWinRate')}>Champ WR (%) {getSortArrow('allChampsWinRate', sortConfig)}</th>
+              <th onClick={() => applySort('gamesCount')}>Matches (&gt;100) {getSortArrow('gamesCount', sortConfig)}</th>
             </tr>
           </thead>
           <tbody>
@@ -487,8 +421,8 @@ function App() {
       {/* Using the CookiePopup component */}
       <CookiePopup
         show={showCookiePopup}
-        onAccept={() => handleCookiesAcceptance(true)}
-        onDecline={() => handleCookiesAcceptance(false)}
+        onAccept={() => handleCookiesAcceptanceWrapper(true)}
+        onDecline={() => handleCookiesAcceptanceWrapper(false)}
         onClose={() => setShowCookiePopup(false)}
       />
     </div>
