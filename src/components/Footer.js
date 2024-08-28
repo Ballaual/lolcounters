@@ -1,5 +1,6 @@
 import React from 'react';
 import packageJson from '../../package.json';
+import '../styles/Footer.css';
 
 function Footer() {
     const buildId = process.env.REACT_APP_GIT_COMMIT || 'unknown';
@@ -12,7 +13,7 @@ function Footer() {
             Idea by Justdom | Made by Ballaual |
             v. {packageJson.version} |
             Build: {buildId !== 'unknown' ? (
-                <a href={commitUrl} target="_blank" rel="noopener noreferrer">
+                <a href={commitUrl} className="commit-link" target="_blank" rel="noopener noreferrer">
                     {buildId}
                 </a>
             ) : 'unknown'} |
