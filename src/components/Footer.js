@@ -10,14 +10,16 @@ function Footer() {
 
     return (
         <footer className="footer">
-            Idea by Justdom | Made by Ballaual |
-            v. {packageJson.version} |
-            Build: {buildId !== 'unknown' ? (
-                <a href={commitUrl} className="commit-link" target="_blank" rel="noopener noreferrer">
-                    {buildId}
-                </a>
-            ) : 'unknown'} |
-            Branch: {branch}
+            <div className="footer-line">
+                Idea by Justdom | Made by Ballaual | v. {packageJson.version}
+            </div>
+            <div className="footer-line">
+                Build: {buildId !== 'unknown' ? (
+                    <a href={commitUrl} className="commit-link" target="_blank" rel="noopener noreferrer">
+                        {buildId}
+                    </a>
+                ) : 'unknown'} | Branch: {branch}
+            </div>
         </footer>
     );
 }
