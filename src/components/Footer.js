@@ -1,7 +1,6 @@
 import React from 'react';
 import packageJson from '../../package.json';
 import '../styles/Footer.css';
-
 import cookieImage from '../assets/cookies.png';
 
 function Footer({ onCookieClick }) {
@@ -22,7 +21,6 @@ function Footer({ onCookieClick }) {
                     </a>
                 ) : 'unknown'} | Branch: {branch}
             </div>
-            {/* Cookie Image */}
             <div className="cookie-container">
                 <img
                     src={cookieImage}

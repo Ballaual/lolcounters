@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Home.css';
 import Cookies from 'js-cookie';
-import { Header, Footer, ChampionSelect, RankSelect, LaneSelect, PatchSelect, YourChampionsSelect, CookiePopup } from '../components';
-import { sortData, getSortArrow } from '../utils/sortData';
+import {
+    Header,
+    Footer,
+    ChampionSelect,
+    RankSelect,
+    LaneSelect,
+    PatchSelect,
+    YourChampionsSelect,
+    CookiePopup
+} from '../components';
 import {
     loadThemeFromCookies,
     loadCookiePreferences,
@@ -11,6 +19,8 @@ import {
     handleCookiesAcceptance,
     saveDataToCookies
 } from '../utils/manageCookies';
+import { sortData, getSortArrow } from '../utils/sortData';
+
 
 // Server- und Seiten-URLs als Konstanten definieren
 const SERVER_URL = 'https://ballaual.de:54321';
@@ -36,7 +46,6 @@ function Home() {
     const [showCookiePopup, setShowCookiePopup] = useState(false);
     const [cookiesAccepted, setCookiesAccepted] = useState(Cookies.get('cookiesAccepted') === 'true');
 
-    // Initial loading of theme, cookies, and saved values
     useEffect(() => {
         document.title = "LoL - Counterpick Analyzer";
 
@@ -45,7 +54,6 @@ function Home() {
         loadSavedValuesFromCookies(cookiesAccepted, setLane, setRank, setYourChampions);
     }, [cookiesAccepted]);
 
-    // Toggle theme and save to cookies if accepted
     const toggleTheme = () => {
         const newTheme = theme === 'light' ? 'dark' : 'light';
         setTheme(newTheme);
@@ -55,27 +63,22 @@ function Home() {
         saveThemeToCookies(newTheme, cookiesAccepted);
     };
 
-    // Handle cookie acceptance
     const handleCookiesAcceptanceWrapper = (accept) => {
         handleCookiesAcceptance(accept, setCookiesAccepted, setShowCookiePopup);
     };
 
-    // Save selected champions to cookies when accepted
     useEffect(() => {
         saveDataToCookies('yourChampions', JSON.stringify(yourChampions), cookiesAccepted);
     }, [yourChampions, cookiesAccepted]);
 
-    // Save lane selection to cookies when accepted
     useEffect(() => {
         saveDataToCookies('lane', lane, cookiesAccepted);
     }, [lane, cookiesAccepted]);
 
-    // Save rank selection to cookies when accepted
     useEffect(() => {
         saveDataToCookies('rank', rank, cookiesAccepted);
     }, [rank, cookiesAccepted]);
 
-    // Custom styles for select menus
     const customStyles = {
         control: (styles) => ({
             ...styles,
@@ -182,7 +185,6 @@ function Home() {
         </div>
     );
 
-    // Load champion, lane, rank, and patch options
     useEffect(() => {
         const loadOptions = async () => {
             try {
@@ -230,7 +232,6 @@ function Home() {
         return () => clearInterval(interval);
     }, []);
 
-    // Fetch data from the server
     const fetchData = async () => {
         setLoading(true);
 
@@ -259,7 +260,6 @@ function Home() {
         setLoading(false);
     };
 
-    // Filter data based on selected champions
     useEffect(() => {
         if (yourChampions.length > 0) {
             const filtered = data.filter((row) =>
@@ -271,15 +271,12 @@ function Home() {
         }
     }, [yourChampions, data]);
 
-    // Change champion selection
     const handleChampionChange = (selectedChampion) => {
         setChampion(selectedChampion);
     };
 
-    // Check if the form is complete
     const isFormComplete = champion && lane && rank && patch;
 
-    // Render champion table cell
     const renderChampionTableCell = (row) => (
         <span style={{ display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => handleChampionClick(row.apiName)}>
             <img
@@ -296,7 +293,6 @@ function Home() {
         </span>
     );
 
-    // Handle champion click and open URL for analysis
     const handleChampionClick = (apiName) => {
         if (champion && lane && rank && patch) {
             const url = `https://lolalytics.com/lol/${apiName}/vs/${champion.value}/build/?lane=${lane}&tier=${rank}&vslane=${lane}&patch=${patch}`;
@@ -304,7 +300,6 @@ function Home() {
         }
     };
 
-    // Apply sorting to the data
     const applySort = (key) => {
         const { sortedData, newConfig } = sortData(key, filteredData, sortConfig);
         setFilteredData(sortedData);
@@ -407,18 +402,8 @@ function Home() {
                 </table>
             </div>
 
-            <Footer />
+            <Footer onCookieClick={() => setShowCookiePopup(true)} />
 
-            <img
-                src={`${process.env.PUBLIC_URL}/cookies.png`}
-                alt="Cookie Settings"
-                className="cookie-button"
-                onClick={() => setShowCookiePopup(true)}
-                width={32}
-                height={32}
-            />
-
-            {/* Using the CookiePopup component */}
             <CookiePopup
                 show={showCookiePopup}
                 onAccept={() => handleCookiesAcceptanceWrapper(true)}
