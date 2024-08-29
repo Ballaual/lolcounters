@@ -48,3 +48,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: build/
           server-dir: /lol/
+          timeouts: 60000
