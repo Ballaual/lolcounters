@@ -1,4 +1,4 @@
-name: Build and Deploy React App
+name: Build and Deploy React App (Live)
 
 on:
   push:
@@ -6,13 +6,11 @@ on:
       - main
       - master
       - Live
-      - Development
   pull_request:
     branches:
       - main
       - master
       - Live
-      - Development
   workflow_dispatch:
 
 jobs:
