@@ -1,0 +1,55 @@
+.slider-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background-color: #333;
+    color: white;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.slider-menu.open {
+    transform: translateX(0);
+}
+
+.slider-menu .close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.slider-menu nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+.slider-menu nav ul li {
+    margin-bottom: 20px;
+}
+
+.slider-menu nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.slider-menu nav ul li a:hover {
+    text-decoration: underline;
+}
+
+.header .menu-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    margin-right: 20px;
+}
