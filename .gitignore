@@ -21,3 +21,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Server certs
+server/fullchain.pem
+server/privkey.pem
